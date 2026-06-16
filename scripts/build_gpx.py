@@ -11,6 +11,7 @@ Usage:
 import json
 import os
 import re
+import unicodedata
 from xml.sax.saxutils import escape
 
 ELEVATION = 1045.55
@@ -19,8 +20,12 @@ OUTPUT_DIR = os.path.join("docs", "data", "gpx")
 
 
 def file_name(name):
-    # Mirror the web app: collapse whitespace runs to a single underscore.
-    return re.sub(r"\s+", "_", name) + ".gpx"
+    # ASCII slug: gpx.studio labels a remote file by its raw (non-decoded) URL
+    # basename, so accents/spaces would show up percent-encoded. Strip diacritics
+    # and collapse whitespace to underscores. Must mirror slug() in the web app.
+    normalized = unicodedata.normalize("NFKD", name)
+    ascii_name = "".join(c for c in normalized if not unicodedata.combining(c))
+    return re.sub(r"\s+", "_", ascii_name) + ".gpx"
 
 
 def build_gpx(name, polygons):

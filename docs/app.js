@@ -33,6 +33,12 @@ function setStatus(message, kind = "") {
 const normalize = (s) =>
   s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim();
 
+// File-name slug: strip diacritics and collapse whitespace to underscores.
+// Must mirror file_name() in scripts/build_gpx.py — gpx.studio labels a remote
+// file by its raw URL basename, so accents would show up percent-encoded.
+const slug = (s) =>
+  s.normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/\s+/g, "_");
+
 // GeoJSON stores [lng, lat]; Leaflet expects [lat, lng].
 function toLeaflet(polygons) {
   return polygons.map((polygon) => polygon.map((ring) => ring.map(([lng, lat]) => [lat, lng])));
@@ -167,7 +173,7 @@ function downloadGpx() {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = `${current.replace(/\s+/g, "_")}.gpx`;
+  a.download = `${slug(current)}.gpx`;
   document.body.appendChild(a);
   a.click();
   a.remove();
@@ -181,7 +187,7 @@ function downloadGpx() {
 // gpx.studio fetches the URL server-side and cannot reach localhost.
 function openInGpxStudio() {
   if (!current) return;
-  const fileName = current.replace(/\s+/g, "_") + ".gpx";
+  const fileName = slug(current) + ".gpx";
   const gpxUrl = new URL(`data/gpx/${fileName}`, location.href).href;
   const files = encodeURIComponent(JSON.stringify([gpxUrl]));
   window.open(`https://gpx.studio/app?files=${files}`, "_blank", "noopener");
