@@ -1,8 +1,7 @@
 """Generate docs/data/neighborhoods.json from the PBH WFS service.
 
-Fetches the neighborhoods (via Selenium, because of the WAF), converts UTM
-(EPSG:31983) coordinates to lat/lon (WGS84) and writes the static JSON consumed
-by the web app.
+Fetches the neighborhoods over HTTP, converts UTM (EPSG:31983) coordinates to
+lat/lon (WGS84) and writes the static JSON consumed by the web app.
 
 Usage:
     python scripts/generate_data.py
@@ -20,7 +19,7 @@ OUTPUT_PATH = os.path.join("docs", "data", "neighborhoods.json")
 
 
 def main():
-    print("Fetching neighborhoods from PBH (Selenium)…")
+    print("Fetching neighborhoods from PBH…")
     data = fetch_neighborhoods()
     print(f"  {len(data)} neighborhoods received.")
 

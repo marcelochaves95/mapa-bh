@@ -1,11 +1,17 @@
-from selenium import webdriver
-from selenium.webdriver.common.by import By
 from pyproj import Proj, Transformer
 from urllib.parse import urlencode, urlunparse
 from xml.dom import minidom
 import json
-import os
+import urllib.request
 import xml.etree.ElementTree as ET
+
+# The PBH WAF rejects requests with a default/empty User-Agent (and any request
+# carrying an Origin header), so a browser-like User-Agent is required.
+HEADERS = {
+    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+                  "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    "Accept": "application/json",
+}
 
 def get_url():
     params = {
@@ -26,27 +32,20 @@ def convert_utm_to_latitude_and_longitude(x, y):
     return transformer.transform(x, y)
 
 def fetch_neighborhoods():
-    options = webdriver.ChromeOptions()
-    options.add_argument("--headless")
-    driver = webdriver.Chrome(options=options)
+    request = urllib.request.Request(get_url(), headers=HEADERS)
 
     try:
-        url = get_url()
-        driver.get(url)
-        response = driver.find_element(By.TAG_NAME, "pre").text
-        driver.quit()
-
-        data = json.loads(response)
-
-        neighborhoods = {
-            feature["properties"].get("NOME", "Nome não disponível"): feature["geometry"]["coordinates"]
-            for feature in data.get("features", [])
-        }
-
-        return dict(sorted(neighborhoods.items()))
+        with urllib.request.urlopen(request, timeout=60) as response:
+            data = json.load(response)
     except Exception as e:
-        driver.quit()
         raise RuntimeError(f"Erro ao buscar os dados: {e}")
+
+    neighborhoods = {
+        feature["properties"].get("NOME", "Nome não disponível"): feature["geometry"]["coordinates"]
+        for feature in data.get("features", [])
+    }
+
+    return dict(sorted(neighborhoods.items()))
 
 def generate_gpx(selected_neighborhood, coordinates, file_path, elevation=1045.55):
     gpx = ET.Element("gpx", version="1.1", creator="Mapa BH", xmlns="http://www.topografix.com/GPX/1/1")
