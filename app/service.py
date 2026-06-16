@@ -52,16 +52,17 @@ def generate_gpx(selected_neighborhood, coordinates, file_path, elevation=1045.5
     trk = ET.SubElement(gpx, "trk")
     ET.SubElement(trk, "name").text = selected_neighborhood
 
-    # Each ring (outer boundary or inner hole) is its own segment, otherwise viewers
-    # connect the end of one ring to the start of the next with spurious straight lines.
+    # Only the outer ring of each polygon (index 0) — inner rings are holes (enclaves)
+    # and shouldn't be drawn. Each polygon's boundary is its own segment so viewers
+    # don't connect separate parts with spurious straight lines.
     for polygon in coordinates:
-        for ring in polygon:
-            trkseg = ET.SubElement(trk, "trkseg")
-            for point in ring:
-                longitude, latitude = convert_utm_to_latitude_and_longitude(point[0], point[1])
-                trkpt = ET.SubElement(trkseg, "trkpt", lat=str(latitude), lon=str(longitude))
-                ET.SubElement(trkpt, "ele").text = str(elevation)
-                ET.SubElement(trkpt, "name").text = selected_neighborhood
+        ring = polygon[0]
+        trkseg = ET.SubElement(trk, "trkseg")
+        for point in ring:
+            longitude, latitude = convert_utm_to_latitude_and_longitude(point[0], point[1])
+            trkpt = ET.SubElement(trkseg, "trkpt", lat=str(latitude), lon=str(longitude))
+            ET.SubElement(trkpt, "ele").text = str(elevation)
+            ET.SubElement(trkpt, "name").text = selected_neighborhood
 
     tree = ET.ElementTree(gpx)
 

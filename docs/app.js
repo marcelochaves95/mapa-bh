@@ -154,21 +154,21 @@ function buildGpx(name, polygons) {
     "  <trk>",
     `    <name>${safe}</name>`,
   ];
-  // Each ring (outer boundary or inner hole) is its own segment, otherwise viewers
-  // connect the end of one ring to the start of the next with spurious straight lines.
+  // Only the outer ring of each polygon (index 0) — inner rings are holes (enclaves)
+  // and shouldn't be drawn. Each polygon's boundary is its own segment so viewers
+  // don't connect separate parts with spurious straight lines.
   for (const polygon of polygons) {
-    for (const ring of polygon) {
-      parts.push("    <trkseg>");
-      for (const [lng, lat] of ring) {
-        parts.push(
-          `      <trkpt lat="${lat}" lon="${lng}">`,
-          `        <ele>${ELEVATION}</ele>`,
-          `        <name>${safe}</name>`,
-          "      </trkpt>"
-        );
-      }
-      parts.push("    </trkseg>");
+    const ring = polygon[0];
+    parts.push("    <trkseg>");
+    for (const [lng, lat] of ring) {
+      parts.push(
+        `      <trkpt lat="${lat}" lon="${lng}">`,
+        `        <ele>${ELEVATION}</ele>`,
+        `        <name>${safe}</name>`,
+        "      </trkpt>"
+      );
     }
+    parts.push("    </trkseg>");
   }
   parts.push("  </trk>", "</gpx>", "");
   return parts.join("\n");

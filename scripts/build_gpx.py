@@ -36,19 +36,20 @@ def build_gpx(name, polygons):
         "  <trk>",
         f"    <name>{safe}</name>",
     ]
-    # Each ring (outer boundary or inner hole) is its own segment, otherwise viewers
-    # connect the end of one ring to the start of the next with spurious straight lines.
+    # Only the outer ring of each polygon (index 0) — inner rings are holes (enclaves)
+    # and shouldn't be drawn. Each polygon's boundary is its own segment so viewers
+    # don't connect separate parts with spurious straight lines.
     for polygon in polygons:
-        for ring in polygon:
-            parts.append("    <trkseg>")
-            for lng, lat in ring:
-                parts += [
-                    f'      <trkpt lat="{lat}" lon="{lng}">',
-                    f"        <ele>{ELEVATION}</ele>",
-                    f"        <name>{safe}</name>",
-                    "      </trkpt>",
-                ]
-            parts.append("    </trkseg>")
+        ring = polygon[0]
+        parts.append("    <trkseg>")
+        for lng, lat in ring:
+            parts += [
+                f'      <trkpt lat="{lat}" lon="{lng}">',
+                f"        <ele>{ELEVATION}</ele>",
+                f"        <name>{safe}</name>",
+                "      </trkpt>",
+            ]
+        parts.append("    </trkseg>")
     parts += ["  </trk>", "</gpx>", ""]
     return "\n".join(parts)
 
