@@ -177,6 +177,7 @@ footer {
   display: flex;
   gap: 8px;
   justify-content: center;
+  align-items: center;
   flex-wrap: wrap;
 }
 
@@ -185,7 +186,8 @@ footer a { color: var(--muted); }
 footer .github-link {
   display: inline-flex;
   align-items: center;
-  color: var(--muted);
-  transition: color 0.15s;
+  opacity: 0.8;
+  transition: opacity 0.15s;
 }
-footer .github-link:hover { color: var(--text); }
+footer .github-link:hover { opacity: 1; }
+footer .github-logo { height: 18px; width: auto; display: block; }
