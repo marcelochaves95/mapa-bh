@@ -29,7 +29,19 @@ header {
   text-align: center;
 }
 
-header h1 { margin: 0 0 4px; font-size: 1.5rem; }
+header h1 {
+  margin: 0 0 4px;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+header h1 .flag {
+  height: 1.1em;
+  width: auto;
+  border-radius: 3px;
+}
 header p { margin: 0; color: var(--muted); font-size: 0.9rem; }
 
 main {
@@ -120,12 +132,30 @@ button {
 button:hover:not(:disabled) { background: var(--accent-hover); }
 button:disabled { opacity: 0.45; cursor: not-allowed; }
 
-button.secondary {
-  background: transparent;
-  border: 1px solid var(--border);
-  color: var(--text);
+.actions {
+  display: flex;
+  gap: 10px;
 }
-button.secondary:hover:not(:disabled) { background: #1f2c3a; }
+
+button.action {
+  flex: 1;
+  min-width: 0;
+  height: 48px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #fff;
+  color: #1a2330;
+  border: 1px solid var(--border);
+}
+
+button.action:hover:not(:disabled) { background: #eef1f4; }
+
+button.action .icon { height: 22px; width: 22px; }
+button.action .logo { height: 20px; width: auto; max-width: 100%; }
+button.action span { font-size: 1.05rem; font-weight: 700; }
 
 .status { margin: 0; font-size: 0.85rem; color: var(--muted); min-height: 1.2em; }
 .status.error { color: #f85149; }

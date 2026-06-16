@@ -6,6 +6,7 @@ const els = {
   input: document.getElementById("neighborhood"),
   options: document.getElementById("options"),
   download: document.getElementById("download"),
+  openStrava: document.getElementById("open-strava"),
   openStudio: document.getElementById("open-gpxstudio"),
   status: document.getElementById("status"),
 };
@@ -63,6 +64,7 @@ function closeList() {
 function activate(name) {
   current = name;
   els.download.disabled = false;
+  els.openStrava.disabled = false;
   els.openStudio.disabled = false;
   showOnMap(name);
   setStatus(`Bairro selecionado: ${name}`, "ok");
@@ -101,14 +103,17 @@ function setActive(i) {
 
 function onInput() {
   const value = els.input.value.trim();
-  renderList(els.input.value);
   if (neighborhoods[value]) {
-    // Exact match while typing — activate without closing the list.
+    // Exact match while typing — activate and close the list so the action
+    // buttons below the input are not covered by the open dropdown.
     activate(value);
+    closeList();
   } else {
     current = null;
     els.download.disabled = true;
+    els.openStrava.disabled = true;
     els.openStudio.disabled = true;
+    renderList(els.input.value);
     if (!value) setStatus(`${names.length} bairros. Escolha um.`);
   }
 }
@@ -185,12 +190,21 @@ function downloadGpx() {
 // from remote URLs passed in the `files` query parameter (a JSON array of URLs), so
 // this points to the statically hosted file — only works once deployed, since
 // gpx.studio fetches the URL server-side and cannot reach localhost.
+// The named target ("gpxstudio") reuses the same tab on repeated clicks instead
+// of piling up new ones.
 function openInGpxStudio() {
   if (!current) return;
   const fileName = slug(current) + ".gpx";
   const gpxUrl = new URL(`data/gpx/${fileName}`, location.href).href;
   const files = encodeURIComponent(JSON.stringify([gpxUrl]));
-  window.open(`https://gpx.studio/app?files=${files}`, "_blank", "noopener");
+  window.open(`https://gpx.studio/app?files=${files}`, "gpxstudio");
+}
+
+// Strava has no API/deep-link to receive a GPX from a static site, so this opens
+// the route builder for the user to upload the downloaded GPX manually (a paid
+// Strava feature). Reuses the same tab via a named target.
+function openStrava() {
+  window.open("https://www.strava.com/routes/new", "strava");
 }
 
 // --- Data loading ---
@@ -218,6 +232,7 @@ async function init() {
     });
 
     els.download.addEventListener("click", downloadGpx);
+    els.openStrava.addEventListener("click", openStrava);
     els.openStudio.addEventListener("click", openInGpxStudio);
   } catch (err) {
     setStatus(`Falha ao carregar os bairros: ${err.message}`, "error");

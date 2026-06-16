@@ -5,14 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mapa BH — Gerar GPX dos bairros</title>
   <meta name="description" content="Gere arquivos GPX dos bairros de Belo Horizonte direto no navegador.">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📍</text></svg>">
+  <link rel="icon" type="image/png" href="assets/belo-horizonte-flag.png">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
         integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header>
-    <h1>📍 Mapa BH</h1>
+    <h1><img class="flag" src="assets/belo-horizonte-flag.png" alt=""> Mapa BH</h1>
     <p>Selecione um bairro de Belo Horizonte e baixe o arquivo <strong>GPX</strong>.</p>
   </header>
 
@@ -24,8 +24,17 @@
                role="combobox" aria-autocomplete="list" aria-controls="options" aria-expanded="false" disabled>
         <ul id="options" class="options" role="listbox" hidden></ul>
       </div>
-      <button id="download" disabled>Baixar GPX</button>
-      <button id="open-gpxstudio" class="secondary" disabled>Abrir no GPX Studio</button>
+      <div class="actions">
+        <button id="download" class="action" disabled title="Baixar GPX">
+          <img class="icon" src="assets/download.png" alt=""><span>GPX</span>
+        </button>
+        <button id="open-strava" class="action" disabled title="Abrir no Strava">
+          <img class="logo" src="assets/strava-logo.png" alt="Strava">
+        </button>
+        <button id="open-gpxstudio" class="action" disabled title="Abrir no GPX Studio">
+          <img class="logo" src="assets/gpx-studio-logo.png" alt="GPX Studio">
+        </button>
+      </div>
       <p id="status" class="status">Carregando bairros…</p>
     </div>
     <div id="map" aria-label="Mapa do bairro selecionado"></div>
