@@ -53,13 +53,18 @@ function closeList() {
   activeIndex = -1;
 }
 
-function selectName(name) {
-  els.input.value = name;
+// Mark a valid neighborhood as active: enable the actions and draw it on the map.
+function activate(name) {
   current = name;
   els.download.disabled = false;
   els.openStudio.disabled = false;
   showOnMap(name);
   setStatus(`Bairro selecionado: ${name}`, "ok");
+}
+
+function selectName(name) {
+  els.input.value = name;
+  activate(name);
   closeList();
 }
 
@@ -89,11 +94,17 @@ function setActive(i) {
 }
 
 function onInput() {
-  current = null;
-  els.download.disabled = true;
-  els.openStudio.disabled = true;
+  const value = els.input.value.trim();
   renderList(els.input.value);
-  if (!els.input.value.trim()) setStatus(`${names.length} bairros. Escolha um.`);
+  if (neighborhoods[value]) {
+    // Exact match while typing — activate without closing the list.
+    activate(value);
+  } else {
+    current = null;
+    els.download.disabled = true;
+    els.openStudio.disabled = true;
+    if (!value) setStatus(`${names.length} bairros. Escolha um.`);
+  }
 }
 
 function onKeydown(e) {
