@@ -6,6 +6,7 @@ const els = {
   input: document.getElementById("neighborhood"),
   options: document.getElementById("options"),
   download: document.getElementById("download"),
+  openStudio: document.getElementById("open-gpxstudio"),
   status: document.getElementById("status"),
 };
 
@@ -56,6 +57,7 @@ function selectName(name) {
   els.input.value = name;
   current = name;
   els.download.disabled = false;
+  els.openStudio.disabled = false;
   showOnMap(name);
   setStatus(`Bairro selecionado: ${name}`, "ok");
   closeList();
@@ -89,6 +91,7 @@ function setActive(i) {
 function onInput() {
   current = null;
   els.download.disabled = true;
+  els.openStudio.disabled = true;
   renderList(els.input.value);
   if (!els.input.value.trim()) setStatus(`${names.length} bairros. Escolha um.`);
 }
@@ -161,6 +164,17 @@ function downloadGpx() {
   setStatus(`GPX gerado: ${a.download}`, "ok");
 }
 
+// Open the selected neighborhood in gpx.studio. It loads a GPX from a remote URL
+// passed in the `state` query parameter, so this points to the statically hosted
+// file (only works once deployed — gpx.studio cannot reach localhost).
+function openInGpxStudio() {
+  if (!current) return;
+  const fileName = current.replace(/\s+/g, "_") + ".gpx";
+  const gpxUrl = new URL(`data/gpx/${fileName}`, location.href).href;
+  const state = encodeURIComponent(JSON.stringify({ urls: [gpxUrl] }));
+  window.open(`https://gpx.studio/?state=${state}`, "_blank", "noopener");
+}
+
 // --- Data loading ---
 async function init() {
   try {
@@ -186,6 +200,7 @@ async function init() {
     });
 
     els.download.addEventListener("click", downloadGpx);
+    els.openStudio.addEventListener("click", openInGpxStudio);
   } catch (err) {
     setStatus(`Falha ao carregar os bairros: ${err.message}`, "error");
   }

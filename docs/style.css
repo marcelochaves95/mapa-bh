@@ -120,6 +120,13 @@ button {
 button:hover:not(:disabled) { background: var(--accent-hover); }
 button:disabled { opacity: 0.45; cursor: not-allowed; }
 
+button.secondary {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+button.secondary:hover:not(:disabled) { background: #1f2c3a; }
+
 .status { margin: 0; font-size: 0.85rem; color: var(--muted); min-height: 1.2em; }
 .status.error { color: #f85149; }
 .status.ok { color: var(--accent-hover); }
