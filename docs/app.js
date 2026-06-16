@@ -175,15 +175,16 @@ function downloadGpx() {
   setStatus(`GPX gerado: ${a.download}`, "ok");
 }
 
-// Open the selected neighborhood in gpx.studio. It loads a GPX from a remote URL
-// passed in the `state` query parameter, so this points to the statically hosted
-// file (only works once deployed — gpx.studio cannot reach localhost).
+// Open the selected neighborhood in gpx.studio. Its editor (/app) loads GPX files
+// from remote URLs passed in the `files` query parameter (a JSON array of URLs), so
+// this points to the statically hosted file — only works once deployed, since
+// gpx.studio fetches the URL server-side and cannot reach localhost.
 function openInGpxStudio() {
   if (!current) return;
   const fileName = current.replace(/\s+/g, "_") + ".gpx";
   const gpxUrl = new URL(`data/gpx/${fileName}`, location.href).href;
-  const state = encodeURIComponent(JSON.stringify({ urls: [gpxUrl] }));
-  window.open(`https://gpx.studio/?state=${state}`, "_blank", "noopener");
+  const files = encodeURIComponent(JSON.stringify([gpxUrl]));
+  window.open(`https://gpx.studio/app?files=${files}`, "_blank", "noopener");
 }
 
 // --- Data loading ---
