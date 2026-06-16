@@ -1,16 +1,16 @@
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import QVBoxLayout, QFileDialog, QPushButton, QLabel, QWidget, QMessageBox, QComboBox
-from bairros.service import fetch_neighborhoods, generate_gpx
+from app.service import fetch_neighborhoods, generate_gpx
 
-class Bairros(QWidget):
+class MainWindow(QWidget):
     def __init__(self):
         super().__init__()
         self.init_ui()
         self.load_neighborhoods()
 
     def init_ui(self):
-        self.setWindowTitle("Bairros")
+        self.setWindowTitle("Mapa BH")
         self.setGeometry(200, 200, 400, 300)
 
         icon_path = "assets/icon.ico"

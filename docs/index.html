@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mapa BH — Gerar GPX dos bairros</title>
+  <meta name="description" content="Gere arquivos GPX dos bairros de Belo Horizonte direto no navegador.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📍</text></svg>">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>📍 Mapa BH</h1>
+    <p>Selecione um bairro de Belo Horizonte e baixe o arquivo <strong>GPX</strong>.</p>
+  </header>
+
+  <main>
+    <div class="controls">
+      <label for="neighborhood">Bairro</label>
+      <div class="combo">
+        <input id="neighborhood" placeholder="Digite ou escolha um bairro…" autocomplete="off"
+               role="combobox" aria-autocomplete="list" aria-controls="options" aria-expanded="false" disabled>
+        <ul id="options" class="options" role="listbox" hidden></ul>
+      </div>
+      <button id="download" disabled>Gerar GPX</button>
+      <p id="status" class="status">Carregando bairros…</p>
+    </div>
+    <div id="map" aria-label="Mapa do bairro selecionado"></div>
+  </main>
+
+  <footer>
+    <span>Dados: <a href="https://bhmap.pbh.gov.br/" target="_blank" rel="noopener">PBH / BHGEO</a></span>
+    <span>·</span>
+    <span><a href="https://github.com/marcelochaves95/mapa-bh" target="_blank" rel="noopener">Código no GitHub</a></span>
+  </footer>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+          integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="app.js"></script>
+</body>
+</html>
