@@ -24,6 +24,10 @@
                role="combobox" aria-autocomplete="list" aria-controls="options" aria-expanded="false" disabled>
         <ul id="options" class="options" role="listbox" hidden></ul>
       </div>
+      <div class="tabs" role="tablist">
+        <button class="tab active" data-tab="bairros">Bairros</button>
+        <button class="tab" data-tab="ess">Every Single Street</button>
+      </div>
       <div class="actions">
         <button id="download" class="action" disabled title="Baixar GPX">
           <img class="icon" src="assets/download.png" alt=""><span>GPX</span>
@@ -33,9 +37,6 @@
         </button>
         <button id="open-gpxstudio" class="action" disabled title="Abrir no GPX Studio">
           <img class="logo" src="assets/gpx-studio-logo.png" alt="GPX Studio">
-        </button>
-        <button id="download-streets" class="action" disabled title="Baixar ruas (Every Single Street)">
-          <img class="icon" src="assets/download.png" alt=""><span>Ruas</span>
         </button>
       </div>
       <p id="status" class="status">Carregando bairros…</p>

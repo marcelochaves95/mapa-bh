@@ -8,14 +8,22 @@ const els = {
   download: document.getElementById("download"),
   openStrava: document.getElementById("open-strava"),
   openStudio: document.getElementById("open-gpxstudio"),
-  downloadStreets: document.getElementById("download-streets"),
   status: document.getElementById("status"),
+  tabs: document.querySelectorAll(".tab"),
 };
 
 let neighborhoods = {}; // { name: [ [ [ [lng, lat], ... ] ] ] }  (MultiPolygon)
 let names = [];         // sorted neighborhood names
 let current = null;     // currently selected valid neighborhood name
 let streetLengths = {}; // { name: km } — total street length per neighborhood
+let currentTab = "bairros"; // "bairros" (boundary) | "ess" (every street)
+
+// GPX source per active tab: neighborhood boundary vs every street.
+const GPX_SOURCES = {
+  bairros: { dir: "data/gpx", suffix: "" },
+  ess: { dir: "data/streets", suffix: "_ruas" },
+};
+const gpxPath = (name) => `${GPX_SOURCES[currentTab].dir}/${slug(name)}.gpx`;
 let activeIndex = -1;   // highlighted item in the dropdown
 
 // --- Map ---
@@ -68,10 +76,22 @@ function activate(name) {
   els.download.disabled = false;
   els.openStrava.disabled = false;
   els.openStudio.disabled = false;
-  els.downloadStreets.disabled = false;
   showOnMap(name);
-  const km = streetLengths[name];
-  setStatus(`Bairro selecionado: ${name}${km != null ? ` · ruas: ${km} km` : ""}`, "ok");
+  updateSelectionStatus();
+}
+
+// Status line for the current selection — shows the street km only on the ESS tab.
+function updateSelectionStatus() {
+  if (!current) return;
+  const km = streetLengths[current];
+  const extra = currentTab === "ess" && km != null ? ` · ruas: ${km} km` : "";
+  setStatus(`Bairro selecionado: ${current}${extra}`, "ok");
+}
+
+function setTab(tab) {
+  currentTab = tab;
+  els.tabs.forEach((t) => t.classList.toggle("active", t.dataset.tab === tab));
+  updateSelectionStatus();
 }
 
 function selectName(name) {
@@ -117,7 +137,6 @@ function onInput() {
     els.download.disabled = true;
     els.openStrava.disabled = true;
     els.openStudio.disabled = true;
-    els.downloadStreets.disabled = true;
     renderList(els.input.value);
     if (!value) setStatus(`${names.length} bairros. Escolha um.`);
   }
@@ -181,17 +200,22 @@ function buildGpx(name, polygons) {
 
 function downloadGpx() {
   if (!current) return;
-  const gpx = buildGpx(current, neighborhoods[current]);
-  const blob = new Blob([gpx], { type: "application/gpx+xml" });
-  const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
-  a.href = url;
-  a.download = `${slug(current)}.gpx`;
+  let objectUrl = null;
+  if (currentTab === "bairros") {
+    objectUrl = URL.createObjectURL(
+      new Blob([buildGpx(current, neighborhoods[current])], { type: "application/gpx+xml" }));
+    a.href = objectUrl;
+    a.download = `${slug(current)}.gpx`;
+  } else {
+    a.href = gpxPath(current); // pre-generated static streets file
+    a.download = `${slug(current)}_ruas.gpx`;
+  }
   document.body.appendChild(a);
   a.click();
   a.remove();
-  URL.revokeObjectURL(url);
-  setStatus(`GPX gerado: ${a.download}`, "ok");
+  if (objectUrl) URL.revokeObjectURL(objectUrl);
+  setStatus(`GPX baixado: ${a.download}`, "ok");
 }
 
 // Open the selected neighborhood in gpx.studio. Its editor (/app) loads GPX files
@@ -202,8 +226,7 @@ function downloadGpx() {
 // of piling up new ones.
 function openInGpxStudio() {
   if (!current) return;
-  const fileName = slug(current) + ".gpx";
-  const gpxUrl = new URL(`data/gpx/${fileName}`, location.href).href;
+  const gpxUrl = new URL(gpxPath(current), location.href).href;
   const files = encodeURIComponent(JSON.stringify([gpxUrl]));
   window.open(`https://gpx.studio/app?files=${files}`, "gpxstudio");
 }
@@ -212,18 +235,6 @@ function openInGpxStudio() {
 // the file first (otherwise the user would land on the route builder with nothing
 // to upload) and open the builder for a manual upload. Reuses the tab via a named
 // target.
-// Download the pre-generated GPX with every street of the neighborhood (for the
-// "Every Single Street" challenge) — a static file served from the site.
-function downloadStreets() {
-  if (!current) return;
-  const a = document.createElement("a");
-  a.href = `data/streets/${slug(current)}.gpx`;
-  a.download = `${slug(current)}_ruas.gpx`;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-}
-
 function openStrava() {
   if (!current) return;
   downloadGpx();
@@ -263,7 +274,7 @@ async function init() {
     els.download.addEventListener("click", downloadGpx);
     els.openStrava.addEventListener("click", openStrava);
     els.openStudio.addEventListener("click", openInGpxStudio);
-    els.downloadStreets.addEventListener("click", downloadStreets);
+    els.tabs.forEach((t) => t.addEventListener("click", () => setTab(t.dataset.tab)));
   } catch (err) {
     setStatus(`Falha ao carregar os bairros: ${err.message}`, "error");
   }
