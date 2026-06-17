@@ -31,13 +31,16 @@ jobs:
           python-version: "3.12"
 
       - name: Install dependencies
-        run: pip install pyproj
+        run: pip install pyproj shapely
 
       - name: Fetch data from PBH
         run: python scripts/generate_data.py
 
       - name: Build GPX files
         run: python scripts/build_gpx.py
+
+      - name: Build street GPX
+        run: python scripts/build_streets.py
 
       - name: Copy assets into site
         run: mkdir -p docs/assets && cp assets/* docs/assets/
