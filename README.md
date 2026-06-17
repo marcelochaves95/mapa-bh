@@ -11,3 +11,7 @@ Escolha um bairro, visualize o limite no mapa e baixe o `.gpx`, abra no gpx.stud
 ## Dados
 
 Os limites dos bairros vêm do portal **[IDE-BHGEO](https://geonetwork.pbh.gov.br/geonetwork/srv/por/catalog.search#/metadata/db4df402-3e4c-4338-9c8b-d8e36c00ccce)** — Infraestrutura de Dados Espaciais da Prefeitura de Belo Horizonte (camada `ide_bhgeo:BAIRRO_POPULAR`).
+
+## Licença
+
+GPL-3.0 © 2026 Marcelo Chaves — veja [LICENSE](LICENSE).
